@@ -4,40 +4,98 @@
 <head>
     <title>WebSocket 测试</title>
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <!-- <script src="websocket-sockjs.js"></script> -->
     <!-- <script src="websocket-stomp.js"></script> -->
     <script src="stomp.js"></script>
 </head>
 
 <body>
-    <p>接收到消息：</p>
-    <div id="message"></div>
+    <div id="message">
+        <span>请输入想要订阅的destination: </span><input v-model="destination"></input>
+        <br />
+        <button v-on:click="unSubscribe">取消订阅</button>
+        <button v-on:click="subscribe">开启订阅</button>
+        <br />
+        <br />
+        <textarea v-model="sendMessage" @keyup.enter="sendMessageToServer" rows="10" cols="30"></textarea><br />
+        <!-- <input v-model="sendMessage" @keyup.enter="sendMessageToServer" ></input> -->
+        <button @click="sendMessageToServer" width="50px" style="width:80;">发送信息</button>
+        <br />
+        <br />
+        服务端接收到的消息：
+        <ul>
+            <message-show v-for="msg in receivedMessage" :list-name="msg"></message-show>
+        </ul>
+    </div>
+
+
     <script>
-        var socket = new WebSocket("ws://localhost:8000/stomp/test");
-        var stompClient = Stomp.over(socket);
-        stompClient.connect({}, function (frame) {
-            console.log("连接成功", frame);
+        //定义一个消息接收的组件
+        Vue.component("message-show", {
+            props: ['listName'],
+            template: '<li>{{listName.text}}</li>'
+        })
 
-            console.log("向/web-socket/stomp/test", "Hello,STOMP")
-            stompClient.send("/web-socket/stomp/side", {}, "Hello,STOMP");
+        //创建一个顶级的Vue对象
+        var vm = new Vue({
+            el: '#message',
+            data: {
+                "sendMessage": "",
+                "receivedMessage": [],
+                "subscription": new Map(),
+                "stompClient": null,
+                "destination": "1"
+            },
+            mounted() {
+                this.initWebSocket();
+            },
+            methods: {
+                //发送消息
+                sendMessageToServer: function () {
+                    if (this.sendMessage)
+                        this.stompClient.send("/web-socket/stomp/side", {}, this.sendMessage);
+                    this.sendMessage = '';
+                },
 
-            console.log("向/web-socket/stomp/ant/abc", "Hello,ant")
-            stompClient.send("/web-socket/stomp/ant/abc", {}, "Hello,ant");
-
-            console.log("订阅topic", "/topic")
-            var subscription = stompClient.subscribe("/topic", function (message) {
-                // called every time the client receives a message
-                console.log("stomp接收到topic推送的消息：", message);
-            });
-            console.log(subscription);
-            // console.log("取消订阅！")
-            // subscription.unsubscribe();
-        }, function (error) {
-            // display the error's message header:
-            alert("订阅失败", error);
+                //取消订阅
+                unSubscribe: function () {
+                    var sub = this.subscription.get(this.destination);
+                    if (sub === undefined) {
+                        alert("还未开启订阅");
+                        return;
+                    }
+                    sub.unsubscribe();
+                    this.subscription.delete(this.destination);
+                },
+                //开启订阅
+                subscribe: function () {
+                    console.log("订阅topic", "/subscribe/", this.destination);
+                    var sub = this.subscription.get(this.destination);
+                    if (sub != undefined) {
+                        return;
+                    }
+                    this.subscription.set(this.destination, this.stompClient.subscribe("/web-socket/subscribe/" + this.destination,
+                        function (message) {
+                            console.log("stomp接收到" + this.destination + "推送的消息：", message);
+                            vm.receivedMessage.push({ 'text': message.body });
+                        },
+                        { deviceId: "1" }));
+                },
+                //初始化webscoket
+                initWebSocket: function () {
+                    let that = this;
+                    var socket = new WebSocket("ws://127.0.0.1:8000/stomp/test");
+                    this.stompClient = Stomp.over(socket);
+                    this.stompClient.connect({}, function (frame) {
+                        console.log("连接成功", frame);
+                    }, function (error) {
+                        // display the error's message header:
+                        alert("断开连接", error);
+                    });
+                }
+            }
         });
-
-
     </script>
 </body>
 

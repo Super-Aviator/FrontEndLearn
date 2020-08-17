@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>vue-start</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+
+<body>
+
+    <div id="app-1">
+        {{message}}
+        <span v-bind:title="message">鼠标放上来试下</span>
+        <span>{{abcDef}}</span>
+        <span v-if="seen">能看到吗？</span>
+        <ol>
+            <li v-for="todo in todos">
+                {{todo.text}}
+            </li>
+        </ol>
+        <hr />
+        <button v-on:click="reverseMethod">点击翻转</button>
+        <hr />
+        <span>{{input}}</span>
+        <input v-model="input" />
+
+        <hr />
+        <ol>
+            <li>第一个代办事项</li>
+            <todo-item v-for="item in todos" v-bind:list="item"></todo-item>
+        </ol>
+        <hr />
+        <p v-once>{{once}}</p>
+        <hr />
+        <p >{{html}}</p>
+        <p v-html="html"></p>
+    </div>
+
+    <script>
+        // 注册一个组件，接收一个名为todo的参数
+        Vue.component('todo-item', {
+            props: ['list'],
+            template: '<li>{{list.text}}</li>'
+        });
+
+        var app = new Vue({
+            el: '#app-1',
+            data: {
+                'message': "app1",
+                "abcDef": "你好",
+                "seen": true,
+                "todos": [
+                    { "text": "条目1" },
+                    { "text": "条目2" },
+                    { "text": "条目4" }
+                ],
+                "input": '',
+                "once":'只变一次',
+                "html":"<snap style='color:red'>html文本</snap>"
+            },
+            methods: {
+                reverseMethod: function () {
+                    this.abc = this.abc.split("").reverse().join("")
+                    this.seen = !this.seen,
+                    this.once='还会变吗'
+                }
+            }
+        })
+
+        app.$watch("seen", function (newValue, oldValue) {
+            console.log("旧值：新值", oldValue, newValue);
+        })
+
+        console.log(app.$data)
+        console.log(app.$el)
+    </script>
+</body>
+
+</html>
