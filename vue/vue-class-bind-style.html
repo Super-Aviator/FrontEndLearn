@@ -1,0 +1,24 @@
++<!DOCTYPE html>
+<html>
+
+<head>
+    <title>vue-class-bind-style</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+
+<body>
+    <div id="classBindStyle">
+        <div class="ni" v-bind:class="{ isactive: isActive ,'text-danger': textDanger}"></div>
+    </div>
+    <script>
+        var vm = new Vue({
+            el: '#classBindStyle',
+            data: {
+                "isActive": true,
+                "textDanger": true
+            }
+        })
+    </script>
+</body>
+
+</html>
