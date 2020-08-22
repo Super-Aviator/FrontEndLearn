@@ -70,7 +70,7 @@
                 },
                 //开启订阅
                 subscribe: function () {
-                    console.log("订阅topic", "/subscribe/", this.destination);
+                    console.log("订阅topic", "/web-socket/subscribe/", this.destination);
                     var sub = this.subscription.get(this.destination);
                     if (sub != undefined) {
                         return;
