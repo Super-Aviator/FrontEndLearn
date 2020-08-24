@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>if-else</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+
+<body>
+   
+    <div id="abc">
+        <ol >
+            <li v-for="(item,index) in items" key-="index">{{item}}</li>
+        </ol>
+    </div>
+
+    <script>
+        var vm = new Vue({
+            el: "#abc",
+            data: {
+                "ok": true,
+                "items":[
+                    "你",
+                    "好",
+                    "吗"
+                ]
+            },
+            methods: {
+                reverse: function () {
+                    this.ok=!this.ok;
+                    this.type = (this.type === 'username' ? 'email' : 'username');
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>if-else</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+
+<body>
+    <div id="abc">
+        <template v-if="ok">
+            <ol>
+                <li>你好</li>
+                <li>你好</li>
+                <li>你好</li>
+            </ol>
+        </template>
+        <template v-else>好吧，溜溜球了</template>
+        <br />
+        <template v-if="type === 'username'">
+            <label>请输入用户名</label>
+            <input placeholder="用户名"  key="key1">
+        </template>
+        <template v-else="type === 'email'">
+            <label>请输入邮箱地址</label>
+            <input placeholder="邮箱地址"  key="key2">
+        </template>
+
+        <span v-show="ok">v-show是否展示</span>
+        <br />
+        <button v-on:click="reverse">更换登录方式</button>
+    </div>
+
+    <script>
+        var vm = new Vue({
+            el: "#abc",
+            data: {
+                "ok": true,
+                "type": "username"
+            },
+            methods: {
+                reverse: function () {
+                    this.ok=!this.ok;
+                    this.type = (this.type === 'username' ? 'email' : 'username');
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

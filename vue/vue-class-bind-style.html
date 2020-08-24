@@ -9,13 +9,17 @@
 <body>
     <div id="classBindStyle">
         <div class="ni" v-bind:class="{ isactive: isActive ,'text-danger': textDanger}"></div>
+        <div v-bind:class="myClass"></div>
     </div>
     <script>
         var vm = new Vue({
             el: '#classBindStyle',
             data: {
                 "isActive": true,
-                "textDanger": true
+                "textDanger": true,
+                "myClass":{
+                    "exists":true
+                }
             }
         })
     </script>
